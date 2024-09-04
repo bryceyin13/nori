@@ -86,4 +86,17 @@ private:
     Node         *octree = nullptr;
 };
 
+struct PQueNode {
+    Node* node;
+    float nearT;
+
+    PQueNode(Node* n, float t) : node(n), nearT(t) {}
+};
+
+struct CompareNearT {
+    bool operator()(const PQueNode& a, const PQueNode& b) {
+        return a.nearT > b.nearT;
+    }
+};
+
 NORI_NAMESPACE_END

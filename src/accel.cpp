@@ -21,6 +21,7 @@
 #include <Eigen/Geometry>
 #include <numeric>
 #include <stack>
+#include <queue>
 
 NORI_NAMESPACE_BEGIN
 
@@ -82,13 +83,23 @@ bool Accel::rayIntersect(const Ray3f &ray_, Intersection &its, bool shadowRay) c
 
     Ray3f ray(ray_); /// Make a copy of the ray (we will need to update its '.maxt' value)
 
-    std::stack<Node*> stack;
-    stack.push(octree);
-    if (!m_bbox.rayIntersect(ray)) 
+    /* priority queue traversal 1.6 - 3.5s*/
+    std::priority_queue<PQueNode, std::vector<PQueNode>, CompareNearT> queue;
+    // std::stack<Node*> stack;
+    // stack.push(octree);
+    float nearT;
+    float farT;
+    if (!octree->bbox.rayIntersect(ray, nearT, farT)) 
         return false;
-    while (!stack.empty()) {
-        Node* node = stack.top();
-        stack.pop();
+    queue.push(PQueNode(octree, nearT));
+    while (!queue.empty()) {
+        PQueNode entry = queue.top();
+        queue.pop();
+        if (entry.nearT > ray.maxt)
+            continue;
+        Node* node = entry.node;
+        // Node* node = stack.top();
+        // stack.pop();
         if (!node->isChild) {
             for (size_t i = 0; i < 8; ++i) {
                 float nearT;
@@ -96,7 +107,8 @@ bool Accel::rayIntersect(const Ray3f &ray_, Intersection &its, bool shadowRay) c
                 if (node->child[i] != nullptr && node->child[i]->bbox.rayIntersect(ray, nearT, farT)) {
                     if (nearT > ray.maxt)
                         continue;
-                    stack.push(node->child[i]);
+                    // stack.push(node->child[i]);
+                    queue.push(PQueNode(node->child[i], nearT));
                 }
             }
         } else {
@@ -114,6 +126,40 @@ bool Accel::rayIntersect(const Ray3f &ray_, Intersection &its, bool shadowRay) c
             }
         }
     }
+    // /* stack traversal 4.7 - 5.0s*/
+    // std::stack<Node*> stack;
+    // stack.push(octree);
+    // if (!m_bbox.rayIntersect(ray)) 
+    //     return false;
+    // while (!stack.empty()) {
+    //     Node* node = stack.top();
+    //     stack.pop();
+    //     if (!node->isChild) {
+    //         for (size_t i = 0; i < 8; ++i) {
+    //             float nearT;
+    //             float farT;
+    //             if (node->child[i] != nullptr && node->child[i]->bbox.rayIntersect(ray, nearT, farT)) {
+    //                 if (nearT > ray.maxt)
+    //                     continue;
+    //                 stack.push(node->child[i]);
+    //             }
+    //         }
+    //     } else {
+    //         for (auto idx : node->list) {
+    //             float u, v, t;
+    //             if (m_mesh->rayIntersect(idx, ray, u, v, t)) {
+    //                 if (shadowRay)
+    //                     return true;
+    //                 ray.maxt = its.t = t;
+    //                 its.uv = Point2f(u, v);
+    //                 its.mesh = m_mesh;
+    //                 f = idx;
+    //                 foundIntersection = true;
+    //             }
+    //         }
+    //     }
+    // }
+
     //  && t < ray.maxt
     // /* Brute force search through all triangles */
     // for (uint32_t idx = 0; idx < m_mesh->getTriangleCount(); ++idx) {
