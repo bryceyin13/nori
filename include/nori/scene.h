@@ -115,9 +115,14 @@ public:
     /// Return a string summary of the scene (for debugging purposes)
     std::string toString() const;
 
+    Mesh * getRandomEmitter(Sampler* sampler) const;
+
+    std::vector<Mesh *> getEmitters() const { return m_emitters; }
+
     EClassType getClassType() const { return EScene; }
 private:
     std::vector<Mesh *> m_meshes;
+    std::vector<Mesh *> m_emitters;
     Integrator *m_integrator = nullptr;
     Sampler *m_sampler = nullptr;
     Camera *m_camera = nullptr;

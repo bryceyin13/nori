@@ -12,6 +12,7 @@ public:
 
     Color3f Li(const Scene *scene, Sampler *sampler, const Ray3f &ray) const {
         Intersection its;
+        
         if (!scene->rayIntersect(ray, its))
             return Color3f(0.0f);
         
@@ -21,9 +22,11 @@ public:
         Ray3f shadowray(its.p, wi);
         if (scene->rayIntersect(shadowray))
             return Color3f(0.0f);
-        // for simplicity
-        // return Color3f(1.0f);
-        return Color3f(n.dot(wi) * INV_PI / Warp::squareToCosineHemispherePdf(v));
+
+        // According to MC sampling,
+        // it should "return Color3f(n.dot(wi) * INV_PI / Warp::squareToCosineHemispherePdf(v));"
+        // but since Warp::squareToCosineHemispherePdf(v) == n.dot(wi) / PI, the return value is always 1
+        return Color3f(1.0f);
     }
 
     std::string toString() const {

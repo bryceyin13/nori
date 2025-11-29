@@ -63,16 +63,29 @@ void Scene::activate() {
 void Scene::addChild(NoriObject *obj) {
     switch (obj->getClassType()) {
         case EMesh: {
+                std::cout << "Nori called Scene::addChild, case EMesh!" << std::endl;
+
                 Mesh *mesh = static_cast<Mesh *>(obj);
                 m_accel->addMesh(mesh);
                 m_meshes.push_back(mesh);
+                
+                // if the mesh is an emitter, add it to m_emitters
+                if (mesh->getEmitter() != nullptr) {
+                    m_emitters.push_back(mesh);
+                    std::cout << "Scene::addChild: The mesh is an emitter!" << std::endl;
+                }
+                
+                
             }
             break;
         
         case EEmitter: {
-                //Emitter *emitter = static_cast<Emitter *>(obj);
+                std::cout << "Nori called Scene::addChild, case EEmitter!" << std::endl;
+
+                Emitter *emitter = static_cast<Emitter *>(obj);
+                // m_emitters.push_back(emitter);
                 /* TBD */
-                throw NoriException("Scene::addChild(): You need to implement this for emitters");
+                // throw NoriException("Scene::addChild(): You need to implement this for emitters");
             }
             break;
 
@@ -122,6 +135,21 @@ std::string Scene::toString() const {
         indent(m_camera->toString()),
         indent(meshes, 2)
     );
+}
+
+Mesh * Scene::getRandomEmitter(Sampler* sampler) const {
+    // float random1D = sampler->next1D();
+    // return ;
+    if (m_emitters.empty())
+        return nullptr;
+
+    float random1D = sampler->next1D();
+    size_t index = std::min(
+        (size_t) std::floor(random1D * m_emitters.size()),
+        m_emitters.size() - 1
+    );
+
+    return m_emitters[index];
 }
 
 NORI_REGISTER_CLASS(Scene, "scene");

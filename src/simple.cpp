@@ -12,17 +12,18 @@ public:
 
     Color3f Li(const Scene *scene, Sampler *sampler, const Ray3f &ray) const {
         Intersection its;
+
         if (!scene->rayIntersect(ray, its))
             return Color3f(0.0f);
 
-        Ray3f shadowray(its.p, position - its.p);
-        if (scene->rayIntersect(shadowray))
+        Ray3f shadowRay(its.p, position - its.p);
+        if (scene->rayIntersect(shadowRay))
             return Color3f(0.0f);
         /* Return the component-wise absolute
            value of the shading normal as a color */
         Normal3f n = its.shFrame.n.normalized();
-        float dist = std::pow(its.p.x() - position.x(), 2) + std::pow(its.p.y() - position.y(), 2) + std::pow(its.p.z() - position.z(), 2);
-        Color3f radiance = energy / (4 * M_PI * M_PI) * std::max(0.0f, n.dot((position - its.p).normalized())) / dist; 
+        float dist2 = std::pow(its.p.x() - position.x(), 2) + std::pow(its.p.y() - position.y(), 2) + std::pow(its.p.z() - position.z(), 2);
+        Color3f radiance = (energy / (4 * M_PI * M_PI)) * (std::max(0.0f, n.dot((position - its.p).normalized())) / dist2); 
         return radiance;
     }
 

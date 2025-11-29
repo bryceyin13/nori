@@ -38,6 +38,18 @@ void Mesh::activate() {
         m_bsdf = static_cast<BSDF *>(
             NoriObjectFactory::createInstance("diffuse", PropertyList()));
     }
+
+    m_surfaceArea = 0.f;
+    m_dpdf.clear();
+    m_dpdf.reserve(getTriangleCount());
+    
+    for (uint32_t i = 0; i < getTriangleCount(); i++) {
+        float area = surfaceArea(i);
+        m_surfaceArea += area;
+        m_dpdf.append(area);
+    }
+
+    m_dpdf.normalize();
 }
 
 float Mesh::surfaceArea(uint32_t index) const {
@@ -87,6 +99,38 @@ bool Mesh::rayIntersect(uint32_t index, const Ray3f &ray, float &u, float &v, fl
     return t >= ray.mint && t <= ray.maxt;
 }
 
+bool Mesh::sampleUniform(Sampler* sampler, Point3f& p, Normal3f& n, float& pdf) const {
+
+    uint32_t idx = m_dpdf.sample(sampler->next1D());
+    // barycentric coordinate
+    Point2f rng = sampler->next2D();
+    float alpha = 1 - sqrt(1 - rng.x());
+    float beta = rng.y() * sqrt(1 - rng.x());
+
+    Point3f v0 = m_V.col(m_F(0, idx));
+    Point3f v1 = m_V.col(m_F(1, idx));
+    Point3f v2 = m_V.col(m_F(2, idx));
+    // interpolation with barycentric coordinate
+    p = alpha * v0 + beta * v1 + (1 - alpha - beta) * v2; 
+
+    if (m_N.size() != 0) {
+        // if the mesh already has normal vector on its vertices
+        Point3f n0 = m_N.col(m_F(0, idx));
+        Point3f n1 = m_N.col(m_F(1, idx));
+        Point3f n2 = m_N.col(m_F(2, idx));
+        // interpolation with barycentric coordinate
+        n = (alpha * n0 + beta * n1 + (1 - alpha - beta) * n2).normalized(); 
+    } else {
+        // if not, compute normal vector with cross-product and normalization
+        Vector3f e1 = v1 - v0;
+        Vector3f e2 = v2 - v0;
+        n = e1.cross(e2).normalized();
+    }
+    // getNormalization() returns 1 / m_surfaceArea
+    pdf = m_dpdf.getNormalization();
+    return true;
+}
+
 BoundingBox3f Mesh::getBoundingBox(uint32_t index) const {
     BoundingBox3f result(m_V.col(m_F(0, index)));
     result.expandBy(m_V.col(m_F(1, index)));
@@ -116,6 +160,7 @@ void Mesh::addChild(NoriObject *obj) {
                     throw NoriException(
                         "Mesh: tried to register multiple Emitter instances!");
                 m_emitter = emitter;
+                // emitter->set
             }
             break;
 

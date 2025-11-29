@@ -27,11 +27,15 @@ NORI_NAMESPACE_BEGIN
 struct Node {
     bool isChild;
     BoundingBox3f bbox;
-    std::vector<uint32_t> list;
+    // std::vector<uint32_t> list;
+    std::vector<std::pair<const Mesh*, uint32_t>> triangle_list;
     Node *child[8] = {nullptr};
 
     Node() {}
-    Node(BoundingBox3f _bbox, std::vector<uint32_t> _list, bool _isChild):bbox(_bbox), list(_list), isChild(_isChild) {}
+    Node(BoundingBox3f _bbox, std::vector<std::pair<const Mesh*, uint32_t>> _triangle_list, bool _isChild) : bbox(_bbox), triangle_list(_triangle_list), isChild(_isChild) {}
+
+    // Node(BoundingBox3f _bbox, std::vector<uint32_t> _list, bool _isChild) : bbox(_bbox), list(_list), isChild(_isChild) {}
+
     Node(BoundingBox3f _bbox, bool _isChild):bbox(_bbox), isChild(_isChild) {}
 };
 
@@ -54,7 +58,8 @@ public:
     /// Build the acceleration data structure (currently a no-op)
     void build();
 
-    Node* build(BoundingBox3f bbox, std::vector<uint32_t> list, uint32_t maxDepth);
+    // Node* build(BoundingBox3f bbox, std::vector<uint32_t> list, uint32_t maxDepth);
+    Node* build(BoundingBox3f bbox, std::vector<std::pair<const Mesh*, uint32_t>> lists, uint32_t maxDepth);
 
     /// Return an axis-aligned box that bounds the scene
     const BoundingBox3f &getBoundingBox() const { return m_bbox; }
@@ -81,6 +86,7 @@ public:
     bool rayIntersect(const Ray3f &ray, Intersection &its, bool shadowRay) const;
 
 private:
+    std::vector<const Mesh*> m_meshes;  ///< Meshes
     Mesh         *m_mesh = nullptr; ///< Mesh (only a single one for now)
     BoundingBox3f m_bbox;           ///< Bounding box of the entire scene
     Node         *octree = nullptr;

@@ -22,11 +22,33 @@
 
 NORI_NAMESPACE_BEGIN
 
+struct EmitterQueryRecord {
+    
+    
+    Point3f p;         // shading point
+    Point3f light_p;   // point on light source
+    Normal3f n;        // normal vector at shading point
+    Vector3f wi;       // direction from shading point to point on light source ( point on light source - shading point)
+
+    float pdf;
+    Ray3f shadowRay;
+
+    EmitterQueryRecord(const Point3f& _p) : p(_p) {}
+
+    EmitterQueryRecord(const Point3f& _p, const Point3f& _light_p, const Normal3f& _n) : p(_p), light_p(_light_p), n(_n), wi((light_p - p).normalized()) {}
+};
+
 /**
  * \brief Superclass of all emitters
  */
 class Emitter : public NoriObject {
 public:
+
+    virtual ~Emitter() {}
+    virtual Color3f eval(const EmitterQueryRecord& eRec) const = 0;
+    virtual Color3f getRadiance() const = 0;
+    virtual float pdf(const Mesh* mesh, const EmitterQueryRecord& eRec) const = 0;
+    virtual Color3f sample(const Mesh* mesh, EmitterQueryRecord& eRec, Sampler*) const = 0;
 
     /**
      * \brief Return the type of object (i.e. Mesh/Emitter/etc.) 
