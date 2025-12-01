@@ -1,5 +1,6 @@
 cmake_minimum_required (VERSION 3.8)
 project(nori)
+set(CMAKE_CXX_STANDARD 14)
 
 add_subdirectory(ext ext_build)
 
@@ -71,7 +72,6 @@ add_executable(nori
   src/accel.cpp
   src/chi2test.cpp
   src/common.cpp
-  src/diffuse.cpp
   src/gui.cpp
   src/independent.cpp
   src/main.cpp
@@ -85,10 +85,18 @@ add_executable(nori
   src/scene.cpp
   src/ttest.cpp
   src/warp.cpp
-  src/microfacet.cpp
-  src/mirror.cpp
-  src/dielectric.cpp
-  src/normals.cpp
+
+  src/emitter/area.cpp
+
+  src/bsdf/diffuse.cpp
+  src/bsdf/microfacet.cpp
+  src/bsdf/mirror.cpp
+  src/bsdf/dielectric.cpp
+
+  src/integrator/normals.cpp
+  src/integrator/simple.cpp
+  src/integrator/ao.cpp
+  src/integrator/whitted.cpp
 )
 
 add_definitions(${NANOGUI_EXTRA_DEFS})
@@ -98,7 +106,7 @@ add_executable(warptest
   include/nori/warp.h
   src/warp.cpp
   src/warptest.cpp
-  src/microfacet.cpp
+  src/bsdf/microfacet.cpp
   src/object.cpp
   src/proplist.cpp
   src/common.cpp
