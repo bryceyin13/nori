@@ -25,6 +25,8 @@ Assignments for Nori.
 
 ##### Part 2.2: Ambient occlusion
 
+### Before Assignment 4: Support for Multi-Mesh Scenes
+
 ### Assignment 4
 
 #### Part 1: Area lights
