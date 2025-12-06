@@ -98,6 +98,8 @@ add_executable(nori
   src/integrator/ao.cpp
   src/integrator/whitted.cpp
   src/integrator/path_mats.cpp
+  src/integrator/path_ems.cpp
+  src/integrator/path_mis.cpp
 )
 
 add_definitions(${NANOGUI_EXTRA_DEFS})

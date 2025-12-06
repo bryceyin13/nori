@@ -60,16 +60,15 @@ public:
                 return Color3f(0.0f);
         }
         
-
-        //BSDFQueryRecord bRec(its.shFrame.toLocal(-ray.d));//入射方向是世界坐标，bsdf计算时在切线空间下
-        //Color3f f = its.mesh->getBSDF()->sample(bRec, sampler->next2D());//就是公式中的fr
+        //BSDFQueryRecord bRec(its.shFrame.toLocal(-ray.d));
+        //Color3f f = its.mesh->getBSDF()->sample(bRec, sampler->next2D());
         //Color3f Li = 0;
         //Ray3f rayR = Ray3f(its.p, its.shFrame.toWorld(bRec.wo), 0.0001f);
         //Intersection itsR;
-        //if (scene->rayIntersect(rayR, itsR)) {//出射方向有没有碰到物体
+        //if (scene->rayIntersect(rayR, itsR)) {
         //  if (itsR.mesh->isEmitter()) {
         //    EmitterQueryRecord lRec = EmitterQueryRecord(its.p, itsR.p, itsR.shFrame.n);
-        //    Li = itsR.mesh->getEmitter()->eval(lRec);//出射方向正好是光源，也就是公式的Li
+        //    Li = itsR.mesh->getEmitter()->eval(lRec);
         //  }
         // }
         // return Le + Li * f;
