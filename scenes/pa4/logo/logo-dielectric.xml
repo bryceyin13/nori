@@ -3,8 +3,8 @@
 
     <sampler type="independent">
         <!-- You might want to reduce this number during development -->
-        <integer name="sampleCount" value="256"/>
-        <!-- <integer name="sampleCount" value="4096"/> -->
+        <!-- <integer name="sampleCount" value="256"/> -->
+        <integer name="sampleCount" value="4096"/>
         <!-- <integer name="sampleCount" value="16"/> -->
     </sampler>
 
@@ -16,10 +16,10 @@
 
         <float name="fov" value="60"/>
 
-        <integer name="width" value="1536"/>
-        <integer name="height" value="768"/>
-        <!-- <integer name="width" value="768"/> -->
-        <!-- <integer name="height" value="384"/> -->
+        <!-- <integer name="width" value="1536"/>
+        <integer name="height" value="768"/> -->
+        <integer name="width" value="768"/>
+        <integer name="height" value="384"/>
     </camera>
 
     <mesh type="obj">
