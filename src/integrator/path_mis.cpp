@@ -45,8 +45,8 @@ public:
 
             // uniformly sample light source
             EmitterQueryRecord lRec(its.p);
-            Color3f Li = light->getEmitter()->sample(light, lRec, sampler);
-            float pdf_emitter = light->getEmitter()->pdf(light, lRec);
+            Color3f Li = light->sample(light, lRec, sampler);
+            float pdf_emitter = light->pdf(light, lRec);
 
             // shadow ray
             // if there is an occluder, Li = 0
@@ -62,11 +62,11 @@ public:
             Color3f fl = its.mesh->getBSDF()->eval(blRec);
             float pdf_brdf = its.mesh->getBSDF()->pdf(blRec);
             // balance heuristic
-            float weight_emitter = 0.0f;
-            if (pdf_brdf + pdf_emitter != 0.0f) {
-                weight_emitter = pdf_emitter / (pdf_brdf + pdf_emitter);
-            }
-            // float weight_emitter = pdf_brdf + pdf_emitter > 0.0f ? pdf_emitter / (pdf_brdf + pdf_emitter) : pdf_emitter;
+            //float weight_emitter = 0.0f;
+            // if (pdf_brdf + pdf_emitter != 0.0f) {
+            //     weight_emitter = pdf_emitter / (pdf_brdf + pdf_emitter);
+            // }
+            float weight_emitter = pdf_brdf + pdf_emitter > 0.0f ? pdf_emitter / (pdf_brdf + pdf_emitter) : pdf_emitter;
             radiance += Li * fl * cosTheta * weight_emitter * throughput / (1.0f / scene->getEmitters().size());
 
             // BSDF importance sampling
@@ -89,12 +89,12 @@ public:
             // update BSDF weight for next bounce
             if (new_its.mesh->isEmitter()) {
                 EmitterQueryRecord newbRec = EmitterQueryRecord(origin, new_its.p, new_its.shFrame.n);
-                float pdf_new_emitter = new_its.mesh->getEmitter()->pdf(new_its.mesh, newbRec);
+                float pdf_new_emitter = new_its.mesh->getEmitter()->pdf(new_its.mesh->getEmitter(), newbRec);
                 // balance heuristic
-                if (pdf_new_brdf + pdf_new_emitter != 0.0f) {
-                    weight_brdf = pdf_new_brdf / (pdf_new_brdf + pdf_new_emitter);
-                }
-                // weight_brdf = pdf_new_brdf + pdf_new_emitter > 0.f ? pdf_new_brdf / (pdf_new_brdf + pdf_new_emitter) : pdf_new_brdf;
+                // if (pdf_new_brdf + pdf_new_emitter != 0.0f) {
+                //     weight_brdf = pdf_new_brdf / (pdf_new_brdf + pdf_new_emitter);
+                // }
+                weight_brdf = pdf_new_brdf + pdf_new_emitter > 0.f ? pdf_new_brdf / (pdf_new_brdf + pdf_new_emitter) : pdf_new_brdf;
                 // weight_brdf = pdf_new_brdf / (pdf_new_brdf + pdf_new_emitter);
             }
 

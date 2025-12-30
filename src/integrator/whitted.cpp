@@ -29,7 +29,7 @@ public:
             EmitterQueryRecord eRec(its.p);
 
             // uniformly sample light source
-            Color3f Li = light->getEmitter()->sample(light, eRec, sampler);
+            Color3f Li = light->sample(light, eRec, sampler);
             // shadow ray
             if (scene->rayIntersect(eRec.shadowRay)) {
                 Li = 0;

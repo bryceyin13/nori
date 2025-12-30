@@ -47,14 +47,17 @@ public:
     virtual ~Emitter() {}
     virtual Color3f eval(const EmitterQueryRecord& eRec) const = 0;
     virtual Color3f getRadiance() const = 0;
-    virtual float pdf(const Mesh* mesh, const EmitterQueryRecord& eRec) const = 0;
-    virtual Color3f sample(const Mesh* mesh, EmitterQueryRecord& eRec, Sampler*) const = 0;
+    virtual float pdf(const Emitter* emitter, const EmitterQueryRecord& eRec) const = 0;
+    virtual Color3f sample(const Emitter* emitter, EmitterQueryRecord& eRec, Sampler*) const = 0;
 
     /**
      * \brief Return the type of object (i.e. Mesh/Emitter/etc.) 
      * provided by this instance
      * */
     EClassType getClassType() const { return EEmitter; }
+
+public:
+    Mesh    *mesh = nullptr;     ///< Associated mesh, if any
 };
 
 NORI_NAMESPACE_END

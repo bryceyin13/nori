@@ -45,7 +45,7 @@ public:
 
                 // uniformly sample light source
                 EmitterQueryRecord lRec(its.p);
-                Color3f Li = light->getEmitter()->sample(light, lRec, sampler);
+                Color3f Li = light->sample(light, lRec, sampler);
 
                 // shadow ray
                 // if there is an occluder, Li = 0

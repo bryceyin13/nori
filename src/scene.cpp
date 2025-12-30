@@ -71,7 +71,8 @@ void Scene::addChild(NoriObject *obj) {
                 
                 // if the mesh is an emitter, add it to m_emitters
                 if (mesh->getEmitter() != nullptr) {
-                    m_emitters.push_back(mesh);
+                    m_emitters.push_back(mesh->getEmitter());
+                    m_emitters.back()->mesh = mesh;
                     std::cout << "Scene::addChild: The mesh is an emitter!" << std::endl;
                 }
                 
@@ -83,7 +84,8 @@ void Scene::addChild(NoriObject *obj) {
                 std::cout << "Nori called Scene::addChild, case EEmitter!" << std::endl;
 
                 Emitter *emitter = static_cast<Emitter *>(obj);
-                // m_emitters.push_back(emitter);
+                m_emitters.push_back(emitter);
+
                 /* TBD */
                 // throw NoriException("Scene::addChild(): You need to implement this for emitters");
             }
@@ -137,7 +139,7 @@ std::string Scene::toString() const {
     );
 }
 
-Mesh * Scene::getRandomEmitter(Sampler* sampler) const {
+Emitter * Scene::getRandomEmitter(Sampler* sampler) const {
     // float random1D = sampler->next1D();
     // return ;
     if (m_emitters.empty())
