@@ -15,8 +15,7 @@ public:
         int depth = 1;
         Ray3f currentRay = ray;
         // prevent double counting
-        // it means whether the previous bounce is a diffuse surface
-        // computed in the last iteration, used in the current iteration
+        // it means whether the last bounce is a diffuse surface
         int isDiffuse = 1;
         
         while (true) {

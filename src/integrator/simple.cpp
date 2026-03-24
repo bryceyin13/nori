@@ -22,7 +22,8 @@ public:
         /* Return the component-wise absolute
            value of the shading normal as a color */
         Normal3f n = its.shFrame.n.normalized();
-        float dist2 = std::pow(its.p.x() - position.x(), 2) + std::pow(its.p.y() - position.y(), 2) + std::pow(its.p.z() - position.z(), 2);
+        // float dist2 = std::pow(its.p.x() - position.x(), 2) + std::pow(its.p.y() - position.y(), 2) + std::pow(its.p.z() - position.z(), 2);
+        float dist2 = std::pow((its.p - position).squaredNorm(), 2);
         Color3f radiance = (energy / (4 * M_PI * M_PI)) * (std::max(0.0f, n.dot((position - its.p).normalized())) / dist2); 
         return radiance;
     }
